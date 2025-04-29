@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Event Finder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+            color: #333;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .container h1 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #4a4a4a;
+        }
+        .container p {
+            font-size: 1rem;
+            margin-bottom: 20px;
+            color: #555;
+        }
+        .container button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            background-color: #f56342;
+            color: white;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .container button:hover {
+            background-color: #d94a2e;
+        }
+        .message {
+            margin-top: 20px;
+            color: #28a745;
+            font-size: 1rem;
+        }
+        .events {
+            margin-top: 20px;
+            text-align: left;
+        }
+        .event {
+            background: #fff;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Discover Local Events</h1>
+        <p>We use your location to show events happening nearby. By clicking accept, you agree to our <a href="#">privacy policy</a>.</p>
+        <button id="accept-button">Accept</button>
+        <div id="message" class="message"></div>
+        <div id="events" class="events"></div>
+    </div>
+
+    <script>
+        document.getElementById('accept-button').addEventListener('click', () => {
+            const message = document.getElementById('message');
+            const eventsContainer = document.getElementById('events');
+            message.innerText = 'Getting your location...';
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const { latitude, longitude } = position.coords;
+
+                        // Simulate fetching events based on the user's location
+                        message.innerText = 'Fetching events near you...';
+                        setTimeout(() => {
+                            const mockEvents = [
+                                {
+                                    name: 'Music Festival',
+                                    description: 'Enjoy live music and great food.',
+                                    location: 'City Park',
+                                    date: '2025-05-01',
+                                },
+                                {
+                                    name: 'Art Exhibition',
+                                    description: 'Discover stunning artwork from local artists.',
+                                    location: 'Downtown Gallery',
+                                    date: '2025-05-05',
+                                },
+                            ];
+                            displayEvents(mockEvents);
+                            message.innerText = 'Here are events near you!';
+                        }, 2000);
+                    },
+                    (error) => {
+                        message.innerText = '';
+                        switch (error.code) {
+                            case error.PERMISSION_DENIED:
+                                alert('Permission denied. Please allow location access.');
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                alert('Position unavailable. Try again later.');
+                                break;
+                            case error.TIMEOUT:
+                                alert('Request timed out. Please try again.');
+                                break;
+                            default:
+                                alert('An unknown error occurred.');
+                        }
+                    }
+                );
+            } else {
+                message.innerText = 'Geolocation is not supported by your browser.';
+                alert('Geolocation is not supported by your browser.');
+            }
+        });
+
+        function displayEvents(events) {
+            const eventsContainer = document.getElementById('events');
+            eventsContainer.innerHTML = '';
+
+            if (events.length === 0) {
+                eventsContainer.innerHTML = '<p>No events found nearby.</p>';
+                return;
+            }
+
+            events.forEach((event) => {
+                const eventDiv = document.createElement('div');
+                eventDiv.className = 'event';
+                eventDiv.innerHTML = `
+                    <h3>${event.name}</h3>
+                    <p>${event.description}</p>
+                    <p><strong>Location:</strong> ${event.location}</p>
+                    <p><strong>Date:</strong> ${event.date}</p>
+                `;
+                eventsContainer.appendChild(eventDiv);
+            });
+        }
+    </script>
+</body>
+</html>
